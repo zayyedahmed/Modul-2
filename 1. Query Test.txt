@@ -1,0 +1,36 @@
+USE hotwheels;
+
+SELECT * from customers;
+SELECT * FROM employees;
+SELECT * FROM orderdetails;
+SELECT * FROM offices;
+SELECT * FROM products;
+SELECT * FROM orders;
+SELECT * FROM payments;
+
+-- 1
+SELECT count(customerName) AS Customers, count(DISTINCT(city)) AS Cities, count(DISTINCT(country)) AS Countries  FROM customers;
+
+-- 2
+SELECT count(DISTINCTROW(e.employeeNumber)) AS Employees, 
+count(DISTINCT(o.officeCode)) AS Offices, count(DISTINCT(o.country)) AS Country, 
+count(DISTINCT(p.productName)) AS Products, SUM(DISTINCT(p.quantityInStock)) AS 'TotalQuantityInStock', 
+count(DISTINCT(p.productVendor)) AS Vendors FROM employees e JOIN offices o JOIN products p;
+
+-- 3
+SELECT o.city, COUNT(DISTINCTROW(e.lastName)) AS totalEmployees FROM employees e JOIN offices o
+ON e.officeCode = o.officeCode
+GROUP BY o.city
+ORDER BY totalEmployees DESC;
+
+-- 4
+SELECT productLine, SUM(quantityInStock) AS quantityStock, MIN(buyPrice) AS MinPrice, MAX(buyPrice) AS MaxPrice FROM products GROUP BY productLine;
+
+-- 5
+SELECT c.customerName, c.city, c.country, (SUM(od.priceEach))*(SUM(od.quantityOrdered)) AS Total FROM customers c JOIN orders o
+ON c.customerNumber = o.customerNumber
+JOIN orderdetails od
+ON od.orderNumber = o.orderNumber
+GROUP BY customerName
+ORDER BY Total DESC
+LIMIT 10;
